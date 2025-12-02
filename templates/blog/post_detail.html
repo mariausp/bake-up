@@ -4,6 +4,101 @@
 
 {% block extra_head %}
 <style>
+
+    .bk-comments-section{
+      max-width: 980px;
+      margin: 24px auto 40px;
+      padding: 0 18px 8px;
+    }
+
+    .bk-comments-title{
+      font-family: "Boorsok","Baloo 2",cursive;
+      font-size: 24px;
+      color: #e93a4a;
+      margin: 0 0 12px;
+      font-weight:200;
+    }
+
+    .bk-comments-list{
+      list-style: none;
+      padding: 0;
+      margin: 0 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bk-comment-item{
+      background:#fff;
+      border-radius:16px;
+      padding:10px 12px;
+      box-shadow:0 6px 18px rgba(0,0,0,.04);
+    }
+
+    .bk-comment-meta{
+      font-size:12px;
+      color:#a5737b;
+      margin-bottom:4px;
+    }
+
+    .bk-comment-meta strong{
+      color:#7b5a43;
+    }
+
+    .bk-comment-text{
+      margin:0;
+      font-size:14px;
+      color:#5a4b44;
+    }
+
+    .bk-no-comments{
+      font-size:14px;
+      color:#7b6a62;
+      margin-bottom:8px;
+    }
+
+    .bk-comments-actions{
+      margin-top:4px;
+    }
+
+    .bk-comments-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:#ffe5ee;
+      color:#e93a4a;
+      border-radius:999px;
+      padding:6px 14px;
+      font-size:13px;
+      font-weight:700;
+      text-decoration:none;
+    }
+
+    .bk-comments-btn:hover{
+      filter:brightness(1.03);
+    }
+
+    .bk-comments-icon{
+      width:18px;
+      height:18px;
+      display:block;
+    }
+
+    .bk-no-login{
+      font-size:14px;
+      color:#7b6a62;
+    }
+
+    .bk-no-login a{
+      color:#e93a4a;
+      font-weight:600;
+      text-decoration:none;
+    }
+
+    .bk-no-login a:hover{
+      text-decoration:underline;
+    }
+
   .bk-post-detail{
     max-width: 900px;
     margin: 32px auto 50px;
@@ -123,11 +218,56 @@
         </div>
       {% endif %}
 
-      <div class="bk-post-actions">
-        <a href="{% url 'blog:post_update' post.pk %}" class="bk-link">Editar receita</a>
-        <a href="{% url 'blog:post_delete' post.pk %}" class="bk-link bk-link-danger">Remover receita</a>
+      {% load static %}
+
+    <section id="comentarios" class="bk-comments-section">
+      <h2 class="bk-comments-title">
+        Comentários ({{ comments|length }})
+      </h2>
+
+      {% if comments %}
+        <ul class="bk-comments-list">
+          {% for comment in comments %}
+            <li class="bk-comment-item">
+              <div class="bk-comment-meta">
+                <strong>{{ comment.author.username }}</strong>
+                <span>· {{ comment.created_at|date:"d/m/Y H:i" }}</span>
+              </div>
+              <p class="bk-comment-text">
+                {{ comment.text|linebreaksbr }}
+              </p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="bk-no-comments">
+          Ainda não há comentários nesta receita. Seja o primeiro a comentar! 
+        </p>
+      {% endif %}
+
+      {% if user.is_authenticated %}
+        <div class="bk-comments-actions">
+          <a href="{% url 'blog:comment_create' post.pk %}" class="bk-comments-btn">
+            <img src="{% static 'img/comment.png' %}" alt="" class="bk-comments-icon">
+            Escrever comentário
+          </a>
+        </div>
+      {% else %}
+        <p class="bk-no-login">
+          <a href="{% url 'login' %}">Faça login</a> para deixar um comentário. 💌
+        </p>
+      {% endif %}
+    </section>
+
+
+      <div class="bk-post-actions" style="margin-top: 1rem;">
+        {% if user.is_authenticated %}
+          <a href="{% url 'blog:post_update' post.pk %}" class="bk-link">Editar receita</a>
+          <a href="{% url 'blog:post_delete' post.pk %}" class="bk-link bk-link-danger">Remover receita</a>
+        {% endif %}
         <a href="{% url 'blog:post_list' %}" class="bk-link">Voltar para lista</a>
       </div>
+
     </div>
   </article>
 </section>

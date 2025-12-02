@@ -166,7 +166,10 @@
     const contentInput     = document.getElementById('id_content');
     const errorBox         = document.getElementById('form-errors');
 
-    const hasExistingImage = fileInput.dataset.hasImage === '1';
+    let hasExistingImage = false;
+    if (fileInput && fileInput.dataset) {
+      hasExistingImage = fileInput.dataset.hasImage === '1';
+    }
 
     // Preview da imagem escolhida
     if (fileInput) {
@@ -193,7 +196,7 @@
         if (!ingredientsInput.value.trim()) missing.push('ingredientes');
         if (!preparationInput.value.trim()) missing.push('modo de preparo');
 
-        // imagem obrigatória só se NÃO tiver imagem antiga (ou seja, criação)
+        // imagem obrigatória só se NÃO tiver imagem antiga (criação)
         if (!hasExistingImage && (!fileInput.files || fileInput.files.length === 0)) {
           missing.push('imagem');
         }
@@ -206,7 +209,7 @@
           return;
         }
 
-        // Monta o campo "content" como HTML bonitinho (requisito do enunciado)
+        // Monta o campo "content" como HTML bonitinho (lista de ingredientes e modo de preparo)
         if (contentInput) {
           const ingLines = ingredientsInput.value
             .split('\n')
@@ -274,7 +277,7 @@
       data-has-image="{% if post and post.image %}1{% else %}0{% endif %}"
     >
 
-    <!-- PREVIEW DA IMAGEM DA RECEITA -->
+    <!-- preview da imagem -->
     <div class="bk-image-preview"
          id="image-preview"
          {% if not post or not post.image %}style="display:none;"{% endif %}>
@@ -297,18 +300,17 @@
 
     <div class="bk-field">
       <label for="id_ingredients">Ingredientes</label>
-      <textarea name="ingredients" id="id_ingredients" rows="5" required>{{ post.ingredients|default_if_none:'' }}</textarea>
+      <textarea name="ingredients" id="id_ingredients" rows="5" required>
+{{ post.ingredients|default_if_none:'' }}</textarea>
     </div>
 
     <div class="bk-field">
       <label for="id_preparation">Modo de preparo</label>
-      <textarea name="preparation" id="id_preparation" rows="7" required>{{ post.preparation|default_if_none:'' }}</textarea>
+      <textarea name="preparation" id="id_preparation" rows="7" required>
+{{ post.preparation|default_if_none:'' }}</textarea>
     </div>
 
-    <!-- Campo oculto "content" (HTML) exigido pelo enunciado -->
-    <textarea name="content" id="id_content" style="display:none;">
-      {{ post.content|default_if_none:'' }}
-    </textarea>
+    <textarea name="content" id="id_content" style="display:none;">{{ post.content|default_if_none:'' }}</textarea>
 
     <button type="submit" class="bk-form-submit">Salvar receita</button>
   </form>

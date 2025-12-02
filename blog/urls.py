@@ -1,15 +1,32 @@
+# blog/urls.py
 from django.urls import path
-from . import views
+from .views import (
+    PostListView,
+    PostDetailView,
+    PostCreateView,
+    PostUpdateView,
+    PostDeleteView,
+    CommentCreateView,
+    PostLikeToggleView,
+)
 
 app_name = 'blog'
 
 urlpatterns = [
-    path('', views.post_list, name='post_list'),
-    path('posts/<int:pk>/', views.post_detail, name='post_detail'),
-    path('posts/novo/', views.post_create, name='post_create'),
-    path('posts/<int:pk>/editar/', views.post_update, name='post_update'),
-    path('posts/<int:pk>/remover/', views.post_delete, name='post_delete'),
+    # lista + home
+    path('', PostListView.as_view(), name='post_list'),
 
-    # cadastro
-    path('cadastro/', views.signup, name='signup'),
+    # detalhes do post
+    path('posts/<int:pk>/', PostDetailView.as_view(), name='post_detail'),
+
+    # CRUD de post (só logado)
+    path('posts/novo/', PostCreateView.as_view(), name='post_create'),
+    path('posts/<int:pk>/editar/', PostUpdateView.as_view(), name='post_update'),
+    path('posts/<int:pk>/remover/', PostDeleteView.as_view(), name='post_delete'),
+
+    # comentários (parte 2)
+    path('posts/<int:pk>/comentar/', CommentCreateView.as_view(), name='comment_create'),
+
+    # like / deslike (toggle)
+    path('posts/<int:pk>/like/', PostLikeToggleView.as_view(), name='post_like'),
 ]

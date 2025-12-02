@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Novo comentário – BakeUp{% endblock %}
+
+{% block extra_head %}
+<style>
+  .bk-comment-section{
+    max-width: 640px;
+    margin: 32px auto 48px;
+    padding: 0 18px;
+  }
+
+  .bk-comment-card{
+    background:#ffffff;
+    border-radius:22px;
+    box-shadow:0 10px 28px rgba(0,0,0,.06);
+    padding:22px 20px 20px;
+  }
+
+  .bk-comment-title{
+    font-family:"Boorsok","Baloo 2",cursive;
+    font-size:24px;
+    color:#e93a4a;
+    margin:0 0 6px;
+    text-align:center;
+    font-weight:200;
+  }
+
+  .bk-comment-sub{
+    margin:0 0 16px;
+    text-align:center;
+    font-size:14px;
+    color:#7b6a62;
+  }
+
+  .bk-field{
+    margin-bottom:14px;
+  }
+
+  .bk-field label{
+    display:block;
+    margin-bottom:4px;
+    font-size:13px;
+    font-weight:600;
+    color:#7b5a43;
+  }
+
+  .bk-field textarea{
+    width:100%;
+    border-radius:18px;
+    border:2px solid #ff8a9b;
+    background:#ffece1;
+    padding:8px 12px;
+    font-size:14px;
+    font-family:inherit;
+    outline:none;
+    resize:vertical;
+    min-height:140px;
+    color:#5a4b44;
+  }
+
+  .bk-field textarea:focus{
+    border-color:#e93a4a;
+    box-shadow:0 0 0 2px rgba(255,53,98,.15);
+  }
+
+  .bk-comment-submit{
+    width:100%;
+    margin-top:4px;
+    background:#e93a4a;
+    color:#fff;
+    border:none;
+    padding:9px 16px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+  }
+
+  .bk-comment-submit:hover{
+    filter:brightness(1.05);
+  }
+
+  .bk-link{
+    display:inline-block;
+    margin-top:10px;
+    font-size:14px;
+    color:#e93a4a;
+    font-weight:600;
+    text-decoration:none;
+  }
+
+  .bk-link:hover{
+    text-decoration:underline;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="bk-comment-section">
+  <div class="bk-comment-card">
+    <h1 class="bk-comment-title">Novo comentário</h1>
+    <p class="bk-comment-sub">
+      Escreva o que achou desta receita:
+    </p>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="bk-field">
+        <label for="{{ form.text.id_for_label }}">Comentário</label>
+        {{ form.text }}
+      </div>
+
+      <button type="submit" class="bk-comment-submit">Publicar comentário</button>
+    </form>
+
+    <a href="{% url 'blog:post_detail' view.kwargs.pk %}" class="bk-link">
+      Voltar para a receita
+    </a>
+  </div>
+</section>
+{% endblock %}
