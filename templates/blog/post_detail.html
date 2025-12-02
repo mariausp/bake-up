@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} – BakeUp{% endblock %}
+
+{% block extra_head %}
+<style>
+  .bk-post-detail{
+    max-width: 900px;
+    margin: 32px auto 50px;
+    padding: 0 18px;
+  }
+
+  .bk-post-card{
+    background:#ffffff;
+    border-radius:26px;
+    box-shadow:0 12px 30px rgba(0,0,0,.08);
+    padding:22px 22px 24px;
+  }
+
+  .bk-post-main h1{
+    margin:0 0 4px;
+    color:#e93a4a;
+    font-size:26px;
+    font-family: "Boorsok","Baloo 2",cursive;  /* <<< aqui entra a Boorsok */
+    font-weight:300;
+    letter-spacing: 1px;
+  }
+
+
+  .bk-post-date{
+    margin:0 0 10px;
+    font-size:13px;
+    color:#b27a84;
+  }
+
+  .bk-post-description{
+    margin:0 0 14px;
+    font-size:14px;
+    color:#5a4b44;
+  }
+
+  /* IMAGEM LOGO ABAIXO DA DESCRIÇÃO, MENORZINHA */
+  .bk-post-thumb{
+    max-width: 360px;          /* tamanho máximo da imagem */
+    margin: 0 auto 16px;       /* centralizada e com espaço embaixo */
+    border-radius:18px;
+    overflow:hidden;
+    background:#ffe5ee;
+  }
+
+  .bk-post-thumb img{
+    width:100%;
+    height:auto;
+    display:block;
+  }
+
+  .bk-section-title{
+    margin:14px 0 4px;
+    font-size:16px;
+    color:#e93a4a;
+    font-weight:700;
+  }
+
+  .bk-text-block{
+    font-size:14px;
+    color:#5a4b44;
+    line-height:1.6;
+    background:#fff7f0;
+    border-radius:16px;
+    padding:10px 12px;
+  }
+
+  .bk-text-block p{ margin:0 0 .4rem; }
+
+  .bk-post-actions{
+    margin-top:16px;
+    font-size:13px;
+  }
+
+  .bk-link{
+    color:#e93a4a;
+    font-weight:600;
+    text-decoration:none;
+    margin-right:10px;
+  }
+
+  .bk-link:hover{ text-decoration:underline; }
+
+  .bk-link-danger{ color:#b0203b; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="bk-post-detail">
+  <article class="bk-post-card">
+    <div class="bk-post-main">
+      <h1>{{ post.title }}</h1>
+      <p class="bk-post-date">
+        Publicado em {{ post.created_at|date:"d/m/Y H:i" }}
+      </p>
+
+      {% if post.description %}
+        <p class="bk-post-description">{{ post.description }}</p>
+      {% endif %}
+
+      {% if post.image %}
+        <div class="bk-post-thumb">
+          <img src="{{ post.image.url }}" alt="Imagem de {{ post.title }}">
+        </div>
+      {% endif %}
+
+      {% if post.ingredients %}
+        <h2 class="bk-section-title">Ingredientes</h2>
+        <div class="bk-text-block">
+          {{ post.ingredients|linebreaksbr }}
+        </div>
+      {% endif %}
+
+      {% if post.preparation %}
+        <h2 class="bk-section-title">Modo de preparo</h2>
+        <div class="bk-text-block">
+          {{ post.preparation|linebreaksbr }}
+        </div>
+      {% endif %}
+
+      <div class="bk-post-actions">
+        <a href="{% url 'blog:post_update' post.pk %}" class="bk-link">Editar receita</a>
+        <a href="{% url 'blog:post_delete' post.pk %}" class="bk-link bk-link-danger">Remover receita</a>
+        <a href="{% url 'blog:post_list' %}" class="bk-link">Voltar para lista</a>
+      </div>
+    </div>
+  </article>
+</section>
+{% endblock %}

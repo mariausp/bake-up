@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Remover receita – BakeUp{% endblock %}
+
+{% block extra_head %}
+<style>
+  .bk-delete-section{
+    max-width: 720px;
+    margin: 40px auto 60px;
+    padding: 0 18px;
+  }
+
+  .bk-delete-card{
+    background: #ffffff;
+    border-radius: 26px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+    padding: 24px 24px 22px;
+    position: relative;
+  }
+
+  .bk-delete-badge{
+    position: absolute;
+    top: 18px;
+    right: 24px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #b0203b;
+    background: #ffe0e7;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .bk-delete-title{
+    font-family: "Boorsok","Baloo 2",cursive;
+    font-size: 26px;
+    color: #e93a4a;
+    margin: 0 0 8px;
+  }
+
+  .bk-delete-text{
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: #7b6a62;
+  }
+
+  .bk-delete-post-title{
+    font-weight: 700;
+    color: #e93a4a;
+  }
+
+  .bk-delete-meta{
+    font-size: 12px;
+    color: #a5737b;
+    margin-bottom: 10px;
+  }
+
+  .bk-delete-preview{
+    background: #fff7f0;
+    border-radius: 18px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #5a4b44;
+    max-height: 120px;
+    overflow: auto;
+  }
+
+  .bk-delete-actions{
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .bk-btn-danger{
+    background: #e93a4a;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .bk-btn-danger:hover{
+    filter: brightness(1.05);
+  }
+
+  .bk-btn-outline{
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 2px solid #ffb3c4;
+    color: #e93a4a;
+    background: #fff;
+    text-decoration: none;
+  }
+
+  .bk-btn-outline:hover{
+    background: #fff2f6;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="bk-delete-section">
+  <div class="bk-delete-card">
+    <span class="bk-delete-badge">Remover receita</span>
+
+    <h1 class="bk-delete-title">Tem certeza?</h1>
+    <p class="bk-delete-text">
+      Você está prestes a excluir a receita
+      <span class="bk-delete-post-title">“{{ post.title }}”</span>.
+      Essa ação <strong>não pode ser desfeita</strong>.
+    </p>
+
+    <p class="bk-delete-meta">
+      Publicada em {{ post.created_at|date:"d/m/Y H:i" }}
+    </p>
+
+    <div class="bk-delete-preview">
+      {% if post.description %}
+        {{ post.description }}
+      {% else %}
+        {{ post.content|truncatewords:40|safe }}
+      {% endif %}
+    </div>
+
+    <form method="post" class="bk-delete-actions">
+      {% csrf_token %}
+      <button type="submit" class="bk-btn-danger">
+        Sim, remover receita
+      </button>
+      <a href="{% url 'blog:post_detail' post.pk %}" class="bk-btn-outline">
+        Cancelar
+      </a>
+    </form>
+  </div>
+</section>
+{% endblock %}

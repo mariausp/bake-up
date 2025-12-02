@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Entrar – BakeUp{% endblock %}
+
+{% block extra_head %}
+<style>
+  .bk-auth-section{
+    max-width: 420px;
+    margin: 40px auto 60px;
+    padding: 0 18px;
+    position: relative;          /* para posicionar os corações */
+  }
+
+  /* corações de fundo */
+  .bk-auth-hearts{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+  .bk-heart{
+    position:absolute;
+    width:60px;
+    opacity:0.9;
+  }
+  .bk-heart.top-left{ top:-10px; left:-60px; transform:rotate(-15deg);}
+  .bk-heart.top-right{ top:-20px; right:-68px; transform:rotate(10deg);}
+  .bk-heart.bottom-left{ bottom:-20px; left:-65px; transform:rotate(20deg);}
+  .bk-heart.bottom-right{ bottom:-10px; right:-60px; transform:rotate(-10deg);}
+
+  .bk-auth-card{
+    background: #ffffff;
+    border-radius: 26px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+    padding: 22px 22px 20px;
+    position:relative;
+    z-index:1;   /* fica na frente dos corações */
+  }
+
+  .bk-auth-title{
+    font-family: "Boorsok","Baloo 2",cursive;
+    font-size: 26px;
+    color: #e93a4a;
+    margin: 0 0 4px;
+    text-align: center;
+    font-weight: 300;
+  }
+
+  .bk-auth-sub{
+    margin: 0 0 16px;
+    text-align: center;
+    font-size: 14px;
+    color: #7b6a62;
+  }
+
+  .bk-field{ margin-bottom: 12px; }
+
+  .bk-field label{
+    display:block;
+    margin-bottom:4px;
+    font-size:13px;
+    font-weight:600;
+    color:#7b5a43;
+  }
+
+  .bk-field input{
+    width:100%;
+    border-radius:999px;
+    border:2px solid #ff8a9b;
+    background:#ffece1;
+    padding:8px 12px;
+    font-size:14px;
+    font-family:inherit;
+    outline:none;
+    color:#5a4b44;
+  }
+
+  .bk-field input:focus{
+    border-color:#e93a4a;
+    box-shadow:0 0 0 2px rgba(233,58,74,.15);
+  }
+
+  .bk-auth-error{
+    background:#ffe0e5;
+    border-radius:12px;
+    padding:8px 10px;
+    font-size:13px;
+    color:#b0203b;
+    margin-bottom:10px;
+  }
+
+  .bk-auth-submit{
+    width:100%;
+    margin-top:6px;
+    background:#e93a4a;
+    color:#fff;
+    border-radius:999px;
+    border:none;
+    padding:9px 16px;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+  }
+
+  .bk-auth-submit:hover{
+    filter:brightness(1.05);
+  }
+
+  .bk-auth-footer{
+    margin-top:10px;
+    text-align:center;
+    font-size:13px;
+    color:#7b6a62;
+  }
+
+  .bk-link{
+    color:#e93a4a;
+    font-weight:600;
+    text-decoration:none;
+  }
+
+  .bk-link:hover{
+    text-decoration:underline;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="bk-auth-section">
+  <!-- corações decorativos -->
+  <div class="bk-auth-hearts">
+    <img src="{% static 'img/coração-cheio.png' %}" class="bk-heart top-left" alt="">
+    <img src="{% static 'img/coração-cheio.png' %}" class="bk-heart top-right" alt="">
+    <img src="{% static 'img/coração-cheio.png' %}" class="bk-heart bottom-left" alt="">
+    <img src="{% static 'img/coração-cheio.png' %}" class="bk-heart bottom-right" alt="">
+  </div>
+
+  <div class="bk-auth-card">
+    <h1 class="bk-auth-title">Entrar no BakeUp!</h1>
+    <p class="bk-auth-sub">Faça login para enviar e salvar suas receitas:</p>
+
+    {% if form.non_field_errors %}
+      <div class="bk-auth-error">
+        Usuário ou senha inválidos. Tente novamente.
+      </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="bk-field">
+        <label for="{{ form.username.id_for_label }}">Usuário</label>
+        {{ form.username }}
+      </div>
+      <div class="bk-field">
+        <label for="{{ form.password.id_for_label }}">Senha</label>
+        {{ form.password }}
+      </div>
+      <button type="submit" class="bk-auth-submit">Entrar</button>
+    </form>
+
+    <p class="bk-auth-footer">
+      Ainda não tem conta?
+      <a href="{% url 'blog:signup' %}" class="bk-link">Cadastre-se</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastro – BakeUp{% endblock %}
+
+{% block extra_head %}
+<style>
+  .bk-auth-section{
+    max-width: 420px;
+    margin: 40px auto 60px;
+    padding: 0 18px;
+  }
+  .bk-auth-card{
+    background: #ffffff;
+    border-radius: 26px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+    padding: 22px 22px 20px;
+  }
+  .bk-auth-title{
+    font-family: "Boorsok","Baloo 2",cursive;
+    font-size: 26px;
+    color: #e93a4a;
+    margin: 0 0 4px;
+    text-align: center;
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+  .bk-auth-sub{
+    margin: 0 0 16px;
+    text-align: center;
+    font-size: 14px;
+    color: #7b6a62;
+  }
+  .bk-field{ margin-bottom: 12px; }
+  .bk-field label{
+    display:block;margin-bottom:4px;font-size:13px;font-weight:600;color:#7b5a43;
+  }
+  .bk-field input{
+    width:100%;border-radius:999px;border:2px solid #ff8a9b;
+    background:#ffece1;padding:8px 12px;font-size:14px;font-family:inherit;
+    outline:none;color:#5a4b44;
+  }
+  .bk-field input:focus{
+    border-color:#e93a4a;box-shadow:0 0 0 2px rgba(255,53,98,.15);
+  }
+  .bk-auth-error{
+    background:#ffe0e5;border-radius:12px;padding:8px 10px;
+    font-size:13px;color:#b0203b;margin-bottom:10px;
+  }
+  .bk-auth-submit{
+    width:100%;margin-top:6px;background:#e93a4a;color:#fff;
+    border-radius:999px;border:none;padding:9px 16px;
+    font-weight:700;font-size:14px;cursor:pointer;
+  }
+  .bk-auth-submit:hover{ filter:brightness(1.05); }
+
+  .bk-auth-footer{
+    margin-top:10px;text-align:center;font-size:13px;color:#7b6a62;
+  }
+  .bk-link{
+    color:#e93a4a;font-weight:600;text-decoration:none;
+  }
+  .bk-link:hover{ text-decoration:underline; }
+
+  /* esconder helptext padrão feio do Django */
+  .helptext{display:none;}
+  ul.errorlist{margin:0 0 8px;padding-left:18px;color:#b0203b;font-size:12px;}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="bk-auth-section">
+  <div class="bk-auth-card">
+    <h1 class="bk-auth-title">Crie sua conta</h1>
+    <p class="bk-auth-sub">Cadastre-se para compartilhar suas receitas:</p>
+
+    {% if form.errors %}
+      <div class="bk-auth-error">
+        Verifique os campos abaixo: o usuário pode já existir ou as senhas não coincidem.
+      </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="bk-field">
+        <label for="{{ form.username.id_for_label }}">Usuário</label>
+        {{ form.username }}
+      </div>
+      <div class="bk-field">
+        <label for="{{ form.password1.id_for_label }}">Senha</label>
+        {{ form.password1 }}
+      </div>
+      <div class="bk-field">
+        <label for="{{ form.password2.id_for_label }}">Confirme a senha</label>
+        {{ form.password2 }}
+      </div>
+      <button type="submit" class="bk-auth-submit">Cadastrar</button>
+    </form>
+
+    <p class="bk-auth-footer">
+      Já tem conta?
+      <a href="{% url 'login' %}" class="bk-link">Entrar</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

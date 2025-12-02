@@ -1,0 +1,72 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}BakeUp{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+  /* --- Fonte personalizada --- (se você tiver os arquivos de fonte) */
+  @font-face{
+    font-family: 'Boorsok';
+    src:
+      url("{% static 'fonts/boorsok.woff2' %}") format('woff2'),
+      url("{% static 'fonts/boorsok.ttf' %}") format('truetype'),
+      url("{% static 'fonts/boorsok.otf' %}") format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  </style>
+
+  <style>
+    :root{
+      --bg:#fbf1e7; --ink:#e93a4a; --text:#5a4b44; --muted:#7b6a62;
+      --chip:#ffe6ed; --card:#ffffff; --radius:22px; --shadow:0 8px 24px rgba(0,0,0,.06);
+    }
+    *{box-sizing:border-box} html,body{margin:0}
+    body{background:var(--bg); font-family:Inter,system-ui,Segoe UI,Arial; color:var(--text)}
+    /* NAV */
+    .nav{position:sticky;top:0;z-index:20;background:linear-gradient(#fdebeff5,#fdebefd8);border-bottom:2px solid #f5d6db}
+    .nav-inner{max-width:1050px;margin:auto;padding:14px 18px;display:flex;align-items:center;gap:18px}
+    .logo{font-family:"Boorsok",cursive;font-weight:50;font-size:28px;color:var(--ink);text-decoration:none}
+    .menu{display:flex;gap:22px;margin-left:auto}
+    .menu a{text-decoration:none;color:#e93a4a;font-weight:600;padding:6px 8px;border-radius:12px}
+    .menu a:hover{background:var(--chip)}
+    .container{max-width:1050px;margin:0 auto;padding:18px}
+    footer{text-align:center;padding:24px 18px 36px;color:#8b7770;font-size:13px}
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="nav">
+    <div class="nav-inner">
+      <a class="logo" href="{% url 'blog:post_list' %}">BAKEUP!</a>
+
+      <nav class="menu">
+        <a href="{% url 'blog:post_list' %}">Início</a>
+        <a href="{% url 'blog:post_list' %}">Receitas</a>
+        <a href="#">Favoritos</a>
+        {% if user.is_authenticated %}
+          <span>Olá, {{ user.username }}!</span>
+          <a href="{% url 'logout' %}">Sair</a>
+        {% else %}
+          <a href="{% url 'login' %}">Login</a>   <!-- IMPORTANTE: url 'login' -->
+        {% endif %}
+      </nav>
+
+    </div>
+  </header>
+
+
+  {% block content %}{% endblock %}
+
+  <footer>© {% now "Y" %} BakeUp! — Feito com ❤</footer>
+</body>
+</html>

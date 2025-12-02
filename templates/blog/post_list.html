@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}BakeUp — Todas as receitas{% endblock %}
+
+{% block extra_head %}
+<style>
+  @font-face{
+    font-family: 'Boorsok';
+    src:
+      url("{% static 'fonts/boorsok.woff2' %}") format('woff2'),
+      url("{% static 'fonts/boorsok.ttf' %}") format('truetype'),
+      url("{% static 'fonts/boorsok.otf' %}") format('opentype');
+    font-weight: 200; font-style: normal; font-display: swap;
+  }
+
+  :root{
+    --ink:#e93a4a;
+    --muted:#7b6a62;
+  }
+
+  /* HERO DA HOME */
+  .home-hero{position:relative;text-align:center;padding:28px 18px 0;max-width:1050px;margin:0 auto}
+  .home-hero h1{
+    font-family:'Boorsok',"Baloo 2",cursive;color:var(--ink);font-weight:300;
+    font-size:55px;line-height:1.05;letter-spacing:.5px;text-transform:uppercase;
+    margin:10px auto 12px;text-shadow:0 2px 0 #ffd3db;
+  }
+  .home-hero p{margin:0 auto 14px;max-width:560px;color:var(--muted);font-weight:600}
+  .home-hearts{position:absolute;inset:0;pointer-events:none}
+  .home-heart{position:absolute;width:68px;opacity:.9;transform:rotate(-8deg)}
+  .home-heart.left{left:10%;top:40px; width: 100px; transform: rotate(5deg);}
+  .home-heart.left2{left:75%;top:140px; transform: scaleX(-1) rotate(-30deg); width: 100px;}
+  .home-heart.right{right:8%;top:36px;transform:rotate(8deg)}
+  .home-heart.mini{left:26%;top:170px;width:70px;transform:rotate(-20deg)}
+
+  .home-section-title{
+    margin:8px auto 2px;text-align:center;
+    font-family:'Boorsok',"Baloo 2",cursive;color:var(--ink);font-size:35px; font-weight: 100;
+  }
+
+  .home-grid{max-width:980px;margin:10px auto 36px;padding:0 18px;display:grid;gap:18px;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .home-card{background:transparent;border-radius:0; box-shadow:none;padding:0;justify-items:center;text-align:center;transition:transform .2s, box-shadow .2s}
+  .home-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.08)}
+  .home-card img{width:180px;height:auto;display:block;margin:6px auto 10px}
+  .home-card a{display:inline-block;margin-top:6px;font-weight:700;color:#d64552;text-decoration:none}
+  .home-card a:hover{text-decoration:underline}
+
+  /* ==== LISTA "TODAS AS RECEITAS" ==== */
+  .bk-posts-section {
+    max-width:980px;
+    margin:10px auto 36px;
+    padding:0 18px;
+  }
+
+  .bk-posts-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:24px 0 12px;
+  }
+
+  .bk-posts-header h2 {
+    font-family:'Boorsok',"Baloo 2",cursive;
+    color:var(--ink);
+    font-size:28px;
+    font-weight:100;
+    margin:0;
+  }
+
+  .bk-primary-btn {
+    background-color:#e93a4a;
+    color:#fff;
+    border-radius:999px;
+    padding:0.4rem 1rem;
+    border:none;
+    text-decoration:none;
+    font-weight:600;
+    font-size:0.9rem;
+  }
+
+  .bk-primary-btn:hover{
+    filter:brightness(1.05);
+  }
+
+  .bk-posts-list{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+
+  .bk-post-card{
+    background:#ffffff;
+    border-radius:18px;
+    padding:1rem 1.2rem;
+    box-shadow:0 8px 24px rgba(0,0,0,.06);
+    display:flex;
+    align-items:stretch;
+    gap:18px;
+  }
+
+  .bk-post-main{
+    flex:1;
+  }
+
+  .bk-post-main h3{
+    margin-top:0;
+    margin-bottom:0.2rem;
+  }
+
+  .bk-post-main h3 a{
+    color:#e93a4a;
+    text-decoration:none;
+  }
+
+  .bk-post-main h3 a:hover{ text-decoration:underline; }
+
+  .bk-post-date{
+    font-size:0.8rem;
+    color:#a5737b;
+    margin-top:0;
+    margin-bottom:0.6rem;
+  }
+
+  .bk-post-excerpt{
+    font-size:0.95rem;
+    color:#7b6a62;
+    margin-bottom:0.8rem;
+  }
+
+  .bk-post-actions{
+    display:flex;
+    gap:0.7rem;
+    flex-wrap:wrap;
+  }
+
+  .bk-link{
+    font-size:0.85rem;
+    color:#ff3562;
+    text-decoration:none;
+    font-weight:600;
+  }
+
+  .bk-link:hover{ text-decoration:underline; }
+
+  .bk-link-danger{ color:#b0203b; }
+
+  /* miniatura à direita */
+  .bk-post-thumb{
+    width:140px;
+    flex-shrink:0;
+    border-radius:16px;
+    overflow:hidden;
+    background:#ffe5ee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .bk-post-thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  @media (max-width:860px){
+    .home-grid{grid-template-columns:1fr 1fr}
+    .home-hero h1{font-size:34px}
+  }
+  @media (max-width:560px){
+    .home-grid{grid-template-columns:1fr}
+    .home-hero h1{font-size:30px}
+    .home-heart{display:none}
+  }
+
+  @media (max-width:700px){
+    .bk-post-card{
+      flex-direction:column-reverse;
+    }
+    .bk-post-thumb{
+      width:100%;
+      height:180px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO / CABEÇALHO DA HOME -->
+<section class="home-hero">
+  <div class="home-hearts">
+    <img class="home-heart left"  src="{% static 'img/coração-vazado.png' %}" alt="">
+    <img class="home-heart left2" src="{% static 'img/coração-vazado.png' %}" alt="">
+    <img class="home-heart right" src="{% static 'img/coração-cheio.png' %}"  alt="">
+    <img class="home-heart mini"  src="{% static 'img/coração-cheio.png' %}"  alt="">
+  </div>
+  <h1>Deliciosas receitas<br>para você testar!</h1>
+  <p>Está com vontade de um doce? <br>Confira nossas receitas!</p>
+</section>
+
+<h2 class="home-section-title">Destaques</h2>
+
+<section class="home-grid" aria-label="Receitas em destaque">
+  <article class="home-card">
+    <img src="{% static 'img/bolo-morango.png' %}" alt="Bolo de morango">
+    <a href="#">Bolo de morango</a>
+  </article>
+  <article class="home-card">
+    <img src="{% static 'img/cookie.png' %}" alt="Cookie">
+    <a href="#">Cookie</a>
+  </article>
+  <article class="home-card">
+    <img src="{% static 'img/torta-chocolate.png' %}" alt="Torta de chocolate">
+    <a href="#">Torta de Chocolate</a>
+  </article>
+</section>
+
+<!-- TODAS AS RECEITAS NA MESMA PÁGINA -->
+<section class="bk-posts-section">
+  <div class="bk-posts-header">
+    <h2>Todas as receitas</h2>
+    <a href="{% url 'blog:post_create' %}" class="bk-primary-btn">
+      + Nova receita
+    </a>
+  </div>
+
+  <div class="bk-posts-list">
+    {% for post in posts %}
+      <article class="bk-post-card">
+        <div class="bk-post-main">
+          <h3>
+            <a href="{% url 'blog:post_detail' post.pk %}">
+              {{ post.title }}
+            </a>
+          </h3>
+          <p class="bk-post-date">
+            Publicado em {{ post.created_at|date:"d/m/Y H:i" }}
+          </p>
+          {% if post.description %}
+          <div class="bk-post-excerpt">
+            {{ post.description }}
+          </div>
+        {% endif %}
+          <div class="bk-post-actions">
+            <a href="{% url 'blog:post_detail' post.pk %}" class="bk-link">Ver receita</a>
+            <a href="{% url 'blog:post_update' post.pk %}" class="bk-link">Editar</a>
+            <a href="{% url 'blog:post_delete' post.pk %}" class="bk-link bk-link-danger">Remover</a>
+          </div>
+        </div>
+
+        {% if post.image %}
+          <div class="bk-post-thumb">
+            <img src="{{ post.image.url }}" alt="Imagem de {{ post.title }}">
+          </div>
+        {% endif %}
+      </article>
+    {% empty %}
+      <p>Não há receitas cadastradas ainda. Que tal criar a primeira? 😋</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

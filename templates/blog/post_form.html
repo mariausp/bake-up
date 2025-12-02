@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} – BakeUp{% endblock %}
+
+{% block extra_head %}
+<style>
+  .bk-form-section{
+    max-width: 720px;
+    margin: 24px auto 40px;
+    padding: 0 18px;
+  }
+
+  .bk-form-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .bk-form-header h2{
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #7b5a43;
+  }
+
+  .bk-image-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #ff3562;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 0;
+  }
+
+  .bk-image-icon{
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    overflow: hidden;
+    display: inline-block;
+  }
+
+  .bk-image-icon img{
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .bk-form-card{
+    background: #ffeff5;
+    border-radius: 22px;
+    padding: 22px 20px 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.04);
+  }
+
+  .bk-field{
+    margin-bottom: 14px;
+  }
+
+  .bk-field label{
+    display: block;
+    margin-bottom: 4px;
+    color: #7b5a43;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .bk-field input,
+  .bk-field textarea{
+    width: 100%;
+    border: 2px solid #ff8a9b;
+    background: #ffece1;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    color: #5a4b44;
+  }
+
+  .bk-field textarea{
+    min-height: 160px;
+    border-radius: 18px;
+    resize: vertical;
+  }
+
+  .bk-field input:focus,
+  .bk-field textarea:focus{
+    border-color: #ff3562;
+    box-shadow: 0 0 0 2px rgba(255, 53, 98, .15);
+  }
+
+  .bk-form-submit{
+    margin-top: 4px;
+    background: #ff3562;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .bk-form-submit:hover{
+    filter: brightness(1.05);
+  }
+
+  .bk-link{
+    color: #e93a4a;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .bk-link:hover{
+    text-decoration: underline;
+  }
+
+  /* input de arquivo escondido */
+  .bk-file-input{
+    display: none;
+  }
+
+  /* preview da imagem */
+  .bk-image-preview{
+    margin-bottom: 14px;
+  }
+
+  .bk-image-preview img{
+    max-width: 100%;
+    border-radius: 18px;
+    display: block;
+  }
+
+  /* caixa de erro */
+  .bk-error-box{
+    display: none;
+    background: #ffe0e4;
+    border: 1px solid #ff6b80;
+    color: #a7263d;
+    border-radius: 14px;
+    padding: 8px 12px;
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const fileInput        = document.getElementById('id_image');
+    const previewContainer = document.getElementById('image-preview');
+    const previewImg       = document.getElementById('image-preview-img');
+    const form             = document.getElementById('post-form');
+
+    const titleInput       = document.getElementById('id_title');
+    const descriptionInput = document.getElementById('id_description');
+    const ingredientsInput = document.getElementById('id_ingredients');
+    const preparationInput = document.getElementById('id_preparation');
+    const contentInput     = document.getElementById('id_content');
+    const errorBox         = document.getElementById('form-errors');
+
+    const hasExistingImage = fileInput.dataset.hasImage === '1';
+
+    // Preview da imagem escolhida
+    if (fileInput) {
+      fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Validação antes de enviar + gerar conteúdo HTML
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const missing = [];
+
+        if (!titleInput.value.trim())       missing.push('título');
+        if (!descriptionInput.value.trim()) missing.push('descrição');
+        if (!ingredientsInput.value.trim()) missing.push('ingredientes');
+        if (!preparationInput.value.trim()) missing.push('modo de preparo');
+
+        // imagem obrigatória só se NÃO tiver imagem antiga (ou seja, criação)
+        if (!hasExistingImage && (!fileInput.files || fileInput.files.length === 0)) {
+          missing.push('imagem');
+        }
+
+        if (missing.length > 0) {
+          e.preventDefault();
+          errorBox.style.display = 'block';
+          errorBox.textContent = 'Por favor, preencha: ' + missing.join(', ') + '.';
+          errorBox.scrollIntoView({behavior:'smooth', block:'start'});
+          return;
+        }
+
+        // Monta o campo "content" como HTML bonitinho (requisito do enunciado)
+        if (contentInput) {
+          const ingLines = ingredientsInput.value
+            .split('\n')
+            .map(l => l.trim())
+            .filter(l => l.length > 0);
+
+          const prepLines = preparationInput.value
+            .split('\n')
+            .map(l => l.trim())
+            .filter(l => l.length > 0);
+
+          let html = '';
+
+          if (ingLines.length > 0) {
+            html += '<h2>Ingredientes</h2><ul>';
+            ingLines.forEach(line => {
+              html += '<li>' + line.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</li>';
+            });
+            html += '</ul>';
+          }
+
+          if (prepLines.length > 0) {
+            html += '<h2>Modo de preparo</h2><ol>';
+            prepLines.forEach(line => {
+              html += '<li>' + line.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</li>';
+            });
+            html += '</ol>';
+          }
+
+          contentInput.value = html;
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+<section class="bk-form-section">
+  <div class="bk-form-header">
+    <h2>{{ page_title }}</h2>
+
+    <!-- Label clicável que abre o input de arquivo -->
+    <label for="id_image" class="bk-image-btn">
+      <span class="bk-image-icon">
+        <img src="{% static 'img/icone-imagem.png' %}" alt="Ícone de imagem">
+      </span>
+      Inserir uma imagem
+    </label>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" class="bk-form-card" id="post-form">
+    {% csrf_token %}
+
+    <!-- caixa de erro -->
+    <div id="form-errors" class="bk-error-box"></div>
+
+    <!-- input de arquivo real (escondido) -->
+    <input
+      type="file"
+      name="image"
+      id="id_image"
+      accept="image/*"
+      class="bk-file-input"
+      data-has-image="{% if post and post.image %}1{% else %}0{% endif %}"
+    >
+
+    <!-- PREVIEW DA IMAGEM DA RECEITA -->
+    <div class="bk-image-preview"
+         id="image-preview"
+         {% if not post or not post.image %}style="display:none;"{% endif %}>
+      <img id="image-preview-img"
+           src="{% if post and post.image %}{{ post.image.url }}{% endif %}"
+           alt="Pré-visualização da imagem da receita">
+    </div>
+
+    <div class="bk-field">
+      <label for="id_title">Título da receita</label>
+      <input type="text" name="title" id="id_title" required
+             value="{{ post.title|default_if_none:'' }}">
+    </div>
+
+    <div class="bk-field">
+      <label for="id_description">Descrição</label>
+      <input type="text" name="description" id="id_description" required
+             value="{{ post.description|default_if_none:'' }}">
+    </div>
+
+    <div class="bk-field">
+      <label for="id_ingredients">Ingredientes</label>
+      <textarea name="ingredients" id="id_ingredients" rows="5" required>{{ post.ingredients|default_if_none:'' }}</textarea>
+    </div>
+
+    <div class="bk-field">
+      <label for="id_preparation">Modo de preparo</label>
+      <textarea name="preparation" id="id_preparation" rows="7" required>{{ post.preparation|default_if_none:'' }}</textarea>
+    </div>
+
+    <!-- Campo oculto "content" (HTML) exigido pelo enunciado -->
+    <textarea name="content" id="id_content" style="display:none;">
+      {{ post.content|default_if_none:'' }}
+    </textarea>
+
+    <button type="submit" class="bk-form-submit">Salvar receita</button>
+  </form>
+
+  <p style="margin-top: 10px;">
+    <a href="{% url 'blog:post_list' %}" class="bk-link">Voltar para a página inicial</a>
+  </p>
+</section>
+{% endblock %}
