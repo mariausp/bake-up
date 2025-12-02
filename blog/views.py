@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post
 from django.contrib.auth.forms import UserCreationForm
+from .forms import PostForm
 
 def post_list(request):
     posts = Post.objects.order_by('-created_at')
@@ -14,58 +15,70 @@ def post_detail(request, pk):
 
 def post_create(request):
     if request.method == "POST":
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        content = request.POST.get('content')
-        ingredients = request.POST.get('ingredients')
-        preparation = request.POST.get('preparation')
-        image = request.FILES.get('image')
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            # cria o objeto Post, mas ainda não salva
+            post = form.save(commit=False)
 
-        # todos obrigatórios (você pode relaxar se quiser depois)
-        if title and description and content and ingredients and preparation:
-            post = Post.objects.create(
-                title=title,
-                description=description,
-                content=content,
-                ingredients=ingredients,
-                preparation=preparation,
-                image=image,
+           
+            ingredientes_html = post.ingredients.replace('\n', '<br>')
+            preparo_html      = post.preparation.replace('\n', '<br>')
+
+            post.content = (
+                "<h2>Ingredientes</h2>"
+                f"<p>{ingredientes_html}</p>"
+                "<h2>Modo de preparo</h2>"
+                f"<p>{preparo_html}</p>"
             )
+
+            post.save()
             return redirect('blog:post_detail', pk=post.pk)
-
-        # se faltar algo, você pode mandar uma mensagem de erro depois
     else:
-        post = None
+        form = PostForm()
+        post = None  # para o preview de imagem não quebrar
 
-    return render(request, 'blog/post_form.html', {'post': post, 'page_title': 'Enviar uma nova receita'})
+    return render(
+        request,
+        'blog/post_form.html',
+        {
+            'form': form,
+            'post': post,
+            'page_title': 'Enviar uma nova receita'
+        }
+    )
 
 
 def post_update(request, pk):
     post = get_object_or_404(Post, pk=pk)
 
     if request.method == "POST":
-        # pega os valores editados do formulário
-        post.title = request.POST.get('title', '').strip()
-        post.description = request.POST.get('description', '').strip()
-        post.content = request.POST.get('content', '').strip()
-        post.ingredients = request.POST.get('ingredients', '').strip()
-        post.preparation = request.POST.get('preparation', '').strip()
+        form = PostForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            post = form.save(commit=False)
 
-        image = request.FILES.get('image')
-        if image:
-            post.image = image
+            ingredientes_html = post.ingredients.replace('\n', '<br>')
+            preparo_html      = post.preparation.replace('\n', '<br>')
 
-        # salva as mudanças
-        post.save()
+            post.content = (
+                "<h2>Ingredientes</h2>"
+                f"<p>{ingredientes_html}</p>"
+                "<h2>Modo de preparo</h2>"
+                f"<p>{preparo_html}</p>"
+            )
 
-        # 👉 depois de salvar, VOLTA para a lista de receitas
-        return redirect('blog:post_list')
+            post.save()
+            return redirect('blog:post_list')
+    else:
+        form = PostForm(instance=post)
 
-    # GET: só mostra o formulário preenchido para edição
     return render(
         request,
         'blog/post_form.html',
-        {'post': post, 'page_title': 'Editar receita'}
+        {
+            'form': form,
+            'post': post,
+            'page_title': 'Editar receita'
+        }
     )
 
 
