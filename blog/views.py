@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -7,6 +8,7 @@ from django.views import View
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import logout 
 
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
@@ -18,7 +20,11 @@ class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
-    ordering = ['-created_at']
+
+    # garante que SEMPRE vem todos os posts,
+    # ordenados do mais recente para o mais antigo
+    def get_queryset(self):
+        return Post.objects.order_by('-created_at')
 
 
 class PostDetailView(DetailView):
@@ -36,7 +42,7 @@ class PostDetailView(DetailView):
             .order_by('-created_at')
         )
 
-        # formulário vazio para comentar (se você quiser usar na mesma página)
+        # formulário vazio para comentar 
         context['comment_form'] = CommentForm()
         return context
 
@@ -166,3 +172,13 @@ def signup(request):
         form = UserCreationForm()
 
     return render(request, 'registration/signup.html', {'form': form})
+
+
+# ========== LOGOUT ==========
+
+def logout_view(request):
+    """
+    Faz logout do usuário e redireciona para a lista de posts.
+    """
+    logout(request)
+    return redirect('blog:post_list')

@@ -8,6 +8,8 @@ from .views import (
     PostDeleteView,
     CommentCreateView,
     PostLikeToggleView,
+    signup, 
+    logout_view
 )
 
 app_name = 'blog'
@@ -29,4 +31,6 @@ urlpatterns = [
 
     # like / deslike (toggle)
     path('posts/<int:pk>/like/', PostLikeToggleView.as_view(), name='post_like'),
+    path('logout/', logout_view, name='logout'),
+    path('signup/', signup, name='signup'),
 ]

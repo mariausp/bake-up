@@ -29,23 +29,97 @@
       --bg:#fbf1e7; --ink:#e93a4a; --text:#5a4b44; --muted:#7b6a62;
       --chip:#ffe6ed; --card:#ffffff; --radius:22px; --shadow:0 8px 24px rgba(0,0,0,.06);
     }
-    *{box-sizing:border-box} html,body{margin:0}
-    body{background:var(--bg); font-family:Inter,system-ui,Segoe UI,Arial; color:var(--text)}
+    *{box-sizing:border-box}
+    html,body{margin:0}
+    body{
+      background:var(--bg);
+      font-family:Inter,system-ui,Segoe UI,Arial;
+      color:var(--text)
+    }
+
     /* NAV */
-    .nav{position:sticky;top:0;z-index:20;background:linear-gradient(#fdebeff5,#fdebefd8);border-bottom:2px solid #f5d6db}
-    .nav-inner{max-width:1050px;margin:auto;padding:14px 18px;display:flex;align-items:center;gap:18px}
-    .logo{font-family:"Boorsok",cursive;font-weight:50;font-size:28px;color:var(--ink);text-decoration:none}
-    .menu{display:flex;gap:22px;margin-left:auto}
-    .menu a{text-decoration:none;color:#e93a4a;font-weight:600;padding:6px 8px;border-radius:12px}
-    .menu a:hover{background:var(--chip)}
-    .container{max-width:1050px;margin:0 auto;padding:18px}
-    footer{text-align:center;padding:24px 18px 36px;color:#8b7770;font-size:13px}
+    .nav{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:linear-gradient(#fdebeff5,#fdebefd8);
+      border-bottom:2px solid #f5d6db
+    }
+    .nav-inner{
+      max-width:1050px;
+      margin:auto;
+      padding:14px 18px;
+      display:flex;
+      align-items:center;
+      gap:18px
+    }
+    .logo{
+      font-family:"Boorsok",cursive;
+      font-weight:50;
+      font-size:28px;
+      color:var(--ink);
+      text-decoration:none
+    }
+    .menu{
+      display:flex;
+      gap:22px;
+      margin-left:auto;
+      align-items:center;
+    }
+    .menu a{
+      text-decoration:none;
+      color:#e93a4a;
+      font-weight:600;
+      padding:6px 8px;
+      border-radius:12px
+    }
+    .menu a:hover{
+      background:var(--chip)
+    }
+
+    /* deixa o "Olá, usuário!" alinhado como o resto do menu */
+    .menu .menu-user{
+      font-weight:600;
+      color:#e93a4a;
+      padding:6px 8px;
+      border-radius:12px;
+    }
+
+    /* formulário de logout como item do menu */
+    .menu form{
+      margin:0;
+    }
+    .menu button.menu-logout-btn{
+      background:none;
+      border:none;
+      cursor:pointer;
+      font:inherit;
+      color:#e93a4a;
+      font-weight:600;
+      padding:6px 8px;
+      border-radius:12px;
+    }
+    .menu button.menu-logout-btn:hover{
+      background:var(--chip);
+    }
+
+    .container{
+      max-width:1050px;
+      margin:0 auto;
+      padding:18px
+    }
+    footer{
+      text-align:center;
+      padding:24px 18px 36px;
+      color:#8b7770;
+      font-size:13px
+    }
   </style>
 
   {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <header class="nav">
+  <header class="nav">
     <div class="nav-inner">
       <a class="logo" href="{% url 'blog:post_list' %}">BAKEUP!</a>
 
@@ -53,17 +127,23 @@
         <a href="{% url 'blog:post_list' %}">Início</a>
         <a href="{% url 'blog:post_list' %}">Receitas</a>
         <a href="#">Favoritos</a>
+
         {% if user.is_authenticated %}
-          <span>Olá, {{ user.username }}!</span>
-          <a href="{% url 'logout' %}">Sair</a>
+          <span class="menu-user">Olá, {{ user.username }}!</span>
+
+          <!-- Logout via POST para evitar o erro 405 -->
+          <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="menu-logout-btn">
+              Sair
+            </button>
+          </form>
         {% else %}
-          <a href="{% url 'login' %}">Login</a>   <!-- IMPORTANTE: url 'login' -->
+          <a href="{% url 'login' %}">Login</a>
         {% endif %}
       </nav>
-
     </div>
   </header>
-
 
   {% block content %}{% endblock %}
 
