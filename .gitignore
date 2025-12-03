@@ -1,5 +1,12 @@
+# ambiente / cache
 .venv/
 __pycache__/
-*.pyc
+*.py[cod]
+
+# banco e arquivos locais
 db.sqlite3
 media/
+staticfiles/
+
+# outros
+.env
