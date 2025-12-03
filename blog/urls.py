@@ -8,8 +8,12 @@ from .views import (
     PostDeleteView,
     CommentCreateView,
     PostLikeToggleView,
-    signup, 
-    logout_view
+    signup,
+    logout_view,
+    CategoryListView,
+    CategoryPostListView,
+    FavoriteToggleView,   # ⭐ novo
+    FavoriteListView,     # ⭐ novo
 )
 
 app_name = 'blog'
@@ -31,6 +35,16 @@ urlpatterns = [
 
     # like / deslike (toggle)
     path('posts/<int:pk>/like/', PostLikeToggleView.as_view(), name='post_like'),
+
+    # favoritos
+    path('posts/<int:pk>/favorite/', FavoriteToggleView.as_view(), name='post_favorite'),
+    path('favoritos/', FavoriteListView.as_view(), name='favorites_list'),
+
+    # categorias (parte 3)
+    path('categorias/', CategoryListView.as_view(), name='category_list'),
+    path('categorias/<int:pk>/', CategoryPostListView.as_view(), name='category_detail'),
+
+    # auth simples
     path('logout/', logout_view, name='logout'),
     path('signup/', signup, name='signup'),
 ]

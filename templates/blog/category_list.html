@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Categorias – BakeUp{% endblock %}
+
+{% block extra_head %}
+<style>
+  .bk-cat-page{
+    max-width: 980px;
+    margin: 26px auto 40px;
+    padding: 0 18px;
+  }
+
+  .bk-cat-title{
+    font-family: "Boorsok","Baloo 2",cursive;
+    font-size: 32px;
+    color:#e93a4a;
+    margin: 0 0 10px;
+    letter-spacing: 1.2px;
+    font-size: 200;
+  }
+
+  .bk-cat-subtitle{
+    margin:0 0 20px;
+    font-size:14px;
+    color:#7b6a62;
+  }
+
+  .bk-cat-grid{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap:16px;
+  }
+
+  .bk-cat-card{
+    background:#ffffff;
+    border-radius:18px;
+    box-shadow:0 8px 24px rgba(0,0,0,.06);
+    padding:14px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  .bk-cat-name{
+    font-size:16px;
+    font-weight:700;
+    color:#e93a4a;
+    text-decoration:none;
+  }
+
+  .bk-cat-name:hover{
+    text-decoration:underline;
+  }
+
+  .bk-cat-description{
+    font-size:13px;
+    color:#7b6a62;
+    margin:0;
+  }
+
+  .bk-cat-meta{
+    font-size:12px;
+    color:#b27a84;
+    margin-top:2px;
+  }
+
+  .bk-cat-meta strong{
+    color:#e93a4a;
+  }
+
+  @media (max-width:720px){
+    .bk-cat-grid{
+      grid-template-columns:1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="bk-cat-page">
+  <h1 class="bk-cat-title">Categorias</h1>
+  <p class="bk-cat-subtitle">
+    Explore as receitas do BakeUp por tema: bolos, chocolate, Natal, pães, cupcakes e muito mais. 
+  </p>
+
+  {% if categories %}
+    <div class="bk-cat-grid">
+      {% for category in categories %}
+        <article class="bk-cat-card">
+          <a href="{% url 'blog:category_detail' category.pk %}" class="bk-cat-name">
+            {{ category.name }}
+          </a>
+
+          {% if category.description %}
+            <p class="bk-cat-description">
+              {{ category.description }}
+            </p>
+          {% endif %}
+
+          <p class="bk-cat-meta">
+            <strong>{{ category.posts.count }}</strong>
+            {% if category.posts.count == 1 %}
+              receita nesta categoria
+            {% else %}
+              receitas nesta categoria
+            {% endif %}
+          </p>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>Não há categorias cadastradas ainda.</p>
+  {% endif %}
+</section>
+{% endblock %}

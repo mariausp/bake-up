@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
-  /* --- Fonte personalizada --- (se você tiver os arquivos de fonte) */
+  /* --- Fonte personalizada --- */
   @font-face{
     font-family: 'Boorsok';
     src:
@@ -77,7 +77,7 @@
       background:var(--chip)
     }
 
-    /* deixa o "Olá, usuário!" alinhado como o resto do menu */
+    /* "Olá, usuário!" alinhado como item do menu */
     .menu .menu-user{
       font-weight:600;
       color:#e93a4a;
@@ -125,14 +125,14 @@
 
       <nav class="menu">
         <a href="{% url 'blog:post_list' %}">Início</a>
-        <a href="{% url 'blog:post_list' %}">Receitas</a>
-        <a href="#">Favoritos</a>
+        <a href="{% url 'blog:category_list' %}">Categorias</a>
+        <a href="{% url 'blog:favorites_list' %}">Favoritos</a>
 
         {% if user.is_authenticated %}
           <span class="menu-user">Olá, {{ user.username }}!</span>
 
-          <!-- Logout via POST para evitar o erro 405 -->
-          <form action="{% url 'logout' %}" method="post">
+          <!-- Logout via POST usando a view do app 'blog' -->
+          <form action="{% url 'blog:logout' %}" method="post">
             {% csrf_token %}
             <button type="submit" class="menu-logout-btn">
               Sair

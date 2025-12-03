@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}BakeUp — Todas as receitas{% endblock %}
+{% block title %}
+  {% if category %}
+    BakeUp — {{ category.name }}
+  {% else %}
+    BakeUp — Todas as receitas
+  {% endif %}
+{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -140,7 +146,7 @@
 
   .bk-post-main{flex:1;}
 
-  /* título + ícones (comentário + coração) */
+  /* título + ícones (comentário + coração + favorito) */
   .bk-post-header{
     display:flex;
     justify-content:space-between;
@@ -204,7 +210,7 @@
     display:block;
   }
 
-  /* ===== ÍCONES DE COMENTÁRIO E LIKE ===== */
+  /* ===== ÍCONES DE COMENTÁRIO / LIKE / FAVORITO ===== */
 
   .bk-post-top-icons{
     display:flex;
@@ -312,7 +318,11 @@
 <!-- TODAS AS RECEITAS NA MESMA PÁGINA -->
 <section class="bk-posts-section">
   <div class="bk-posts-header">
-    <h2>Todas as receitas</h2>
+    {% if category %}
+      <h2>Receitas na categoria: {{ category.name }}</h2>
+    {% else %}
+      <h2>Todas as receitas</h2>
+    {% endif %}
 
     {% if user.is_authenticated %}
       <a href="{% url 'blog:post_create' %}" class="bk-primary-btn">+ Nova receita</a>
@@ -363,6 +373,28 @@
                   <span class="bk-like-count">{{ post.likes.count }}</span>
                 </div>
               {% endif %}
+
+              <!-- FAVORITOS -->
+              {% if user.is_authenticated %}
+                <form method="post"
+                      action="{% url 'blog:post_favorite' post.pk %}"
+                      class="bk-like-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.path }}">
+                  <button type="submit" class="bk-like-btn" aria-label="Favoritar receita">
+                    {% if user in post.favorites.all %}
+                      <img src="{% static 'img/favorito-cheio.png' %}" alt="Remover dos favoritos">
+                    {% else %}
+                      <img src="{% static 'img/favorito-vazio.png' %}" alt="Adicionar aos favoritos">
+                    {% endif %}
+                  </button>
+                </form>
+              {% else %}
+                <div class="bk-like-btn bk-like-btn-disabled">
+                  <img src="{% static 'img/favorito-vazio.png' %}" alt="Faça login para favoritar">
+                </div>
+              {% endif %}
+
             </div>
           </div>
 

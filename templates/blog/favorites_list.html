@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Favoritos – BakeUp{% endblock %}
+
+{% block extra_head %}
+<style>
+  .bk-posts-section{
+    max-width:980px;
+    margin:26px auto 40px;
+    padding:0 18px;
+  }
+  .bk-posts-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:0 0 16px;
+  }
+  .bk-posts-header h2{
+    font-family:"Boorsok","Baloo 2",cursive;
+    color:#e93a4a;
+    font-size:28px;
+    font-weight:100;
+    margin:0;
+  }
+  .bk-posts-list{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .bk-post-card{
+    background:#ffffff;
+    border-radius:18px;
+    padding:1rem 1.2rem;
+    box-shadow:0 8px 24px rgba(0,0,0,.06);
+    display:flex;
+    align-items:stretch;
+    gap:18px;
+  }
+  .bk-post-main{flex:1;}
+  .bk-post-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:8px;
+  }
+  .bk-post-main h3{
+    margin-top:0;
+    margin-bottom:0.2rem;
+  }
+  .bk-post-main h3 a{
+    color:#e93a4a;
+    text-decoration:none;
+  }
+  .bk-post-main h3 a:hover{text-decoration:underline;}
+  .bk-post-date{
+    font-size:0.8rem;
+    color:#a5737b;
+    margin-top:0;
+    margin-bottom:0.6rem;
+  }
+  .bk-post-excerpt{
+    font-size:0.95rem;
+    color:#7b6a62;
+    margin-bottom:0.8rem;
+  }
+  .bk-post-thumb{
+    width:140px;
+    flex-shrink:0;
+    border-radius:16px;
+    overflow:hidden;
+    background:#ffe5ee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .bk-post-thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="bk-posts-section">
+  <div class="bk-posts-header">
+    <h2>Receitas favoritas</h2>
+  </div>
+
+  <div class="bk-posts-list">
+    {% for post in posts %}
+      <article class="bk-post-card">
+        <div class="bk-post-main">
+          <div class="bk-post-header">
+            <h3>
+              <a href="{% url 'blog:post_detail' post.pk %}">
+                {{ post.title }}
+              </a>
+            </h3>
+          </div>
+
+          <p class="bk-post-date">
+            Publicado em {{ post.created_at|date:"d/m/Y H:i" }}
+          </p>
+
+          {% if post.description %}
+            <div class="bk-post-excerpt">
+              {{ post.description }}
+            </div>
+          {% endif %}
+        </div>
+
+        {% if post.image %}
+          <div class="bk-post-thumb">
+            <img src="{{ post.image.url }}" alt="Imagem de {{ post.title }}">
+          </div>
+        {% endif %}
+      </article>
+    {% empty %}
+      <p>Você ainda não favoritou nenhuma receita. 💌</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
